@@ -38,6 +38,7 @@ class SearchPlugin(BasePlugin):
         ('separator', config_options.Type(str, default=r'[\s\-]+')),
         ('min_search_length', config_options.Type(int, default=3)),
         ('prebuild_index', config_options.Choice((False, True, 'node', 'python'), default=False)),
+        ('ignore', config_options.Type(list, default=[])),
     )
 
     def on_config(self, config, **kwargs):
@@ -79,6 +80,7 @@ class SearchPlugin(BasePlugin):
                     files.append('lunr.{}.js'.format(lang))
 
             for filename in files:
-                from_path = os.path.join(base_path, 'lunr-language', filename)
-                to_path = os.path.join(output_base_path, filename)
-                utils.copy_file(from_path, to_path)
+                if not filename in self.config['ignore']:
+                    from_path = os.path.join(base_path, 'lunr-language', filename)
+                    to_path = os.path.join(output_base_path, filename)
+                    utils.copy_file(from_path, to_path)
